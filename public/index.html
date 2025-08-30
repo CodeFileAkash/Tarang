@@ -1,642 +1,342 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tarang - Enhanced with ElevenLabs</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tarang - Hinglish AI</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="TARANG__1_-removebg-preview.png" sizes="512x512">
 
-        .container {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
-            max-width: 800px;
-            width: 100%;
-            backdrop-filter: blur(10px);
-        }
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #000;
+      color: #fff;
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+    }
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-        }
+    /* Sidebar */
+    .sidebar {
+      width: 250px;
+      background: #111;
+      border-right: 1px solid #222;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .sidebar-top {
+      padding: 16px;
+    }
+    .new-chat-btn {
+      width: 100%;
+      padding: 10px;
+      background: #10a37f;
+      border: none;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+      color: #fff;
+      margin-bottom: 20px;
+    }
+    .chat-history {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .chat-history button {
+      background: #1a1a1a;
+      border: none;
+      border-radius: 6px;
+      padding: 10px;
+      text-align: left;
+      color: #ccc;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .chat-history button:hover {
+      background: #2a2a2a;
+      color: #fff;
+    }
+    .sidebar-bottom {
+      border-top: 1px solid #222;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .sidebar-bottom button {
+      background: transparent;
+      border: none;
+      color: #aaa;
+      text-align: left;
+      cursor: pointer;
+      padding: 8px;
+      transition: color .2s;
+    }
+    .sidebar-bottom button:hover {
+      color: #fff;
+    }
 
-        .header h1 {
-            color: #333;
-            margin-bottom: 10px;
-            font-size: 2.5rem;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
+    /* Main */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+ .header {
+  padding: 6px 12px;   /* smaller padding */
+  border-bottom: 1px solid #222;
+  background: #111;    /* keep dark */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  height: 50px;        /* fixed smaller height */
+}
 
-        .provider-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #4caf50, #45a049);
-            color: white;
-            padding: 6px 15px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
+.header img {
+  height: 150px;        /* smaller logo */
+  max-width: 600px;
+  object-fit: contain;
+  filter: drop-shadow();
+}
 
-        .chat-container {
-            height: 400px;
-            border: 2px solid #eee;
-            border-radius: 15px;
-            padding: 20px;
-            overflow-y: auto;
-            margin-bottom: 20px;
-            background: rgba(255, 255, 255, 0.8);
-        }
+    .chat-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .message {
+      padding: 12px 16px;
+      border-radius: 8px;
+      max-width: 70%;
+      line-height: 1.4;
+      font-size: 15px;
+      white-space: pre-wrap;
+    }
+    .bot-message {
+      background: #2a2a2a;
+      align-self: flex-start;
+    }
+    .user-message {
+      background: #10a37f;
+      color: #fff;
+      align-self: flex-end;
+    }
 
-        .message {
-            margin-bottom: 15px;
-            padding: 12px 18px;
-            border-radius: 18px;
-            max-width: 80%;
-            animation: fadeIn 0.3s ease-in;
-        }
+    /* Input capsule */
+    .input-section {
+      border-top: 1px solid #222;
+      background: #111;
+      padding: 16px;
+      display: flex;
+      justify-content: center;
+    }
+    .input-wrapper {
+      width: 50%;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 50px;
+      padding: 10px 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+    textarea {
+      flex: 1;
+      resize: none;
+      border: none;
+      background: transparent;
+      color: #fff;
+      font-size: 15px;
+      line-height: 1.4;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    textarea:focus { outline: none; }
+    .btn-icon {
+      background: transparent;
+      border: none;
+      color: #aaa;
+      font-size: 18px;
+      cursor: pointer;
+      padding: 6px;
+      transition: color .2s;
+    }
+    .btn-icon:hover { color: #fff; }
+    .btn-icon.active { color: #10a37f; }
 
-        .user-message {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            margin-left: auto;
-            text-align: right;
-        }
-
-        .bot-message {
-            background: #f0f2f5;
-            color: #333;
-            border: 2px solid #e1e5e9;
-        }
-
-        .controls {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 20px;
-        }
-
-        .btn {
-            padding: 15px 30px;
-            border: none;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        .btn-record {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
-            color: white;
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
-        }
-
-        .btn-record:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 107, 107, 0.6);
-        }
-
-        .btn-record.recording {
-            background: linear-gradient(135deg, #ff3838, #c44569);
-            animation: pulse 1.5s infinite;
-        }
-
-        .btn-stop {
-            background: linear-gradient(135deg, #ffa726, #ff7043);
-            color: white;
-            box-shadow: 0 5px 15px rgba(255, 167, 38, 0.4);
-        }
-
-        .btn-stop:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 167, 38, 0.6);
-        }
-
-        .btn-clear {
-            background: linear-gradient(135deg, #78909c, #546e7a);
-            color: white;
-            box-shadow: 0 5px 15px rgba(120, 144, 156, 0.4);
-        }
-
-        .btn-clear:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(120, 144, 156, 0.6);
-        }
-
-        .status {
-            text-align: center;
-            padding: 15px;
-            margin-bottom: 20px;
-            border-radius: 10px;
-            font-weight: bold;
-        }
-
-        .status.listening {
-            background: rgba(76, 175, 80, 0.2);
-            color: #2e7d32;
-            border: 2px solid rgba(76, 175, 80, 0.3);
-        }
-
-        .status.processing {
-            background: rgba(255, 193, 7, 0.2);
-            color: #f57f17;
-            border: 2px solid rgba(255, 193, 7, 0.3);
-        }
-
-        .status.speaking {
-            background: rgba(33, 150, 243, 0.2);
-            color: #1565c0;
-            border: 2px solid rgba(33, 150, 243, 0.3);
-        }
-
-        .input-section {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .text-input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #ddd;
-            border-radius: 10px;
-            font-size: 16px;
-        }
-
-        .text-input:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .btn-send {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-        }
-
-        .btn-send:hover:not(:disabled) {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-        }
-
-        .voice-controls {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-            padding: 20px;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 15px;
-            border: 2px solid rgba(102, 126, 234, 0.2);
-            flex-wrap: wrap;
-        }
-
-        .control-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            align-items: center;
-        }
-
-        .control-group label {
-            font-weight: bold;
-            color: #333;
-            font-size: 14px;
-        }
-
-        .control-group select {
-            padding: 8px 12px;
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            background: white;
-            font-size: 14px;
-            min-width: 180px;
-        }
-
-        .control-group select:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-
-        .control-group input[type="range"] {
-            width: 100px;
-        }
-
-        .control-group span {
-            font-size: 12px;
-            color: #666;
-            text-align: center;
-            min-width: 40px;
-        }
-
-        .performance-stats {
-            display: flex;
-            justify-content: space-around;
-            margin-bottom: 20px;
-            padding: 15px;
-            background: rgba(76, 175, 80, 0.1);
-            border-radius: 10px;
-            font-size: 12px;
-            color: #2e7d32;
-            border: 2px solid rgba(76, 175, 80, 0.2);
-        }
-    </style>
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
+      background: #2a2a2a;
+      border-radius: 8px;
+      max-width: 70%;
+    }
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #aaa;
+      animation: blink 1.4s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.2; }
+      40% { opacity: 1; }
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <h1>Tarang</h1>
-            <p>Enhanced Hinglish AI with ElevenLabs Natural Voices</p>
-            <span class="provider-badge">Ultra Fast • Natural Voices • ElevenLabs Powered</span>
-        </div>
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-top">
+      <button class="new-chat-btn">+ New Chat</button>
+      <div class="chat-history">
+        <button>Recent Chat 1</button>
+        <button>Recent Chat 2</button>
+      </div>
+    </div>
+    <div class="sidebar-bottom">
+      <button>⚙ Settings</button>
+      <button>❓ Help</button>
+      <button>🔒 Log Out</button>
+    </div>
+  </div>
 
-        <div class="performance-stats">
-            <span>Expected Latency: ~75ms</span>
-            <span>Provider: ElevenLabs Flash v2.5</span>
-            <span>Quality: Ultra High</span>
-            <span>Response Time: <span id="responseTime">--</span></span>
-        </div>
-
-        <div class="voice-controls">
-            <div class="control-group">
-                <label for="voiceSelect">ElevenLabs Voice:</label>
-                <select id="voiceSelect">
-                    <option value="pNInz6obpgDQGcFmaJgB">Adam (Great for Indian English)</option>
-                    <option value="EXAVITQu4vr4xnSDxMaL">Bella (Natural Female)</option>
-                    <option value="VR6AewLTigWG4xSOukaG">Arnold (Deep Male)</option>
-                    <option value="29vD33N1CtxCmqQRPOHJ">Nixon (Authoritative)</option>
-                    <option value="IKne3meq5aSn9XLyUdCD">Charlie (Conversational)</option>
-                    <option value="onwK4e9ZLuTAKqWW03F9">Daniel (Clear & Articulate)</option>
-                </select>
-            </div>
-            
-            <div class="control-group">
-                <label for="stabilitySlider">Voice Stability:</label>
-                <input type="range" id="stabilitySlider" min="0" max="1" step="0.1" value="0.5">
-                <span id="stabilityValue">0.5</span>
-            </div>
-
-            <div class="control-group">
-                <label for="claritySlider">Voice Clarity:</label>
-                <input type="range" id="claritySlider" min="0" max="1" step="0.1" value="0.5">
-                <span id="clarityValue">0.5</span>
-            </div>
-        </div>
-
-        <div id="status" class="status" style="display: none;"></div>
-
-        <div id="chatContainer" class="chat-container">
-            <div class="bot-message">
-                Namaste! I'm Tarang with ElevenLabs integration. I can speak naturally in Hinglish with ultra-fast response times. Click "Start Recording" to speak with me, or type below!
-            </div>
-        </div>
-
-        <div class="input-section">
-            <input type="text" id="textInput" class="text-input" placeholder="Type in Hindi, English, or Hinglish..." />
-            <button id="sendBtn" class="btn btn-send">Send</button>
-        </div>
-
-        <div class="controls">
-            <button id="recordBtn" class="btn btn-record">Start Recording</button>
-            <button id="stopBtn" class="btn btn-stop" disabled>Stop Recording</button>
-            <button id="clearBtn" class="btn btn-clear">Clear Chat</button>
-        </div>
+  <!-- Main content -->
+  <div class="main">
+    <div class="header">
+      <img src="Untitled_design-removebg-preview.png" alt="Tarang Logo">
     </div>
 
-    <script>
-        class ElevenLabsAudioChatbot {
-            constructor() {
-                this.recognition = null;
-                this.synthesis = window.speechSynthesis;
-                this.isListening = false;
-                this.isProcessing = false;
-                this.startTime = null;
-                
-                this.initializeElements();
-                this.initializeSpeechRecognition();
-                this.bindEvents();
-            }
+    <div id="chatContainer" class="chat-container">
+      <div class="bot-message message">Namaste! I'm Tarang. Type or tap 🎤 to talk 👇</div>
+    </div>
 
-            initializeElements() {
-                this.chatContainer = document.getElementById('chatContainer');
-                this.statusDiv = document.getElementById('status');
-                this.recordBtn = document.getElementById('recordBtn');
-                this.stopBtn = document.getElementById('stopBtn');
-                this.clearBtn = document.getElementById('clearBtn');
-                this.textInput = document.getElementById('textInput');
-                this.sendBtn = document.getElementById('sendBtn');
-                this.voiceSelect = document.getElementById('voiceSelect');
-                this.stabilitySlider = document.getElementById('stabilitySlider');
-                this.claritySlider = document.getElementById('claritySlider');
-                this.stabilityValue = document.getElementById('stabilityValue');
-                this.clarityValue = document.getElementById('clarityValue');
-                this.responseTime = document.getElementById('responseTime');
-            }
+    <!-- Capsule Input -->
+    <div class="input-section">
+      <div class="input-wrapper">
+        <button id="micBtn" class="btn-icon" aria-label="Start recording">🎤</button>
+        <textarea id="textInput" rows="1" placeholder="Send a message..."></textarea>
+        <button id="sendBtn" class="btn-icon" aria-label="Send">➤</button>
+      </div>
+    </div>
+  </div>
 
-            initializeSpeechRecognition() {
-                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-                    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-                    this.recognition = new SpeechRecognition();
-                    this.recognition.continuous = false;
-                    this.recognition.interimResults = false;
-                    this.recognition.lang = 'hi-IN'; // Better for Hinglish recognition
-                    
-                    this.recognition.onstart = () => {
-                        this.isListening = true;
-                        this.updateStatus('Listening for Hinglish...', 'listening');
-                        this.recordBtn.textContent = 'Listening...';
-                        this.recordBtn.classList.add('recording');
-                    };
-                    
-                    this.recognition.onresult = (event) => {
-                        const transcript = event.results[0][0].transcript;
-                        this.addMessage(transcript, 'user');
-                        this.processMessage(transcript);
-                    };
-                    
-                    this.recognition.onerror = (event) => {
-                        this.updateStatus(`Speech recognition error: ${event.error}`, 'error');
-                        this.resetRecording();
-                    };
-                    
-                    this.recognition.onend = () => {
-                        this.resetRecording();
-                    };
-                } else {
-                    this.updateStatus('Speech recognition not supported in this browser', 'error');
-                }
-            }
-
-            bindEvents() {
-                this.recordBtn.addEventListener('click', () => this.startRecording());
-                this.stopBtn.addEventListener('click', () => this.stopRecording());
-                this.clearBtn.addEventListener('click', () => this.clearChat());
-                this.sendBtn.addEventListener('click', () => this.sendTextMessage());
-                this.textInput.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                        e.preventDefault();
-                        this.sendTextMessage();
-                    }
-                });
-                
-                this.stabilitySlider.addEventListener('input', (e) => {
-                    this.stabilityValue.textContent = e.target.value;
-                });
-                
-                this.claritySlider.addEventListener('input', (e) => {
-                    this.clarityValue.textContent = e.target.value;
-                });
-            }
-
-            startRecording() {
-                if (!this.recognition) {
-                    this.updateStatus('Speech recognition not available', 'error');
-                    return;
-                }
-
-                if (this.isListening || this.isProcessing) return;
-
-                this.synthesis.cancel();
-                this.recognition.start();
-                this.recordBtn.disabled = true;
-                this.stopBtn.disabled = false;
-            }
-
-            stopRecording() {
-                if (this.recognition && this.isListening) {
-                    this.recognition.stop();
-                }
-                this.resetRecording();
-            }
-
-            resetRecording() {
-                this.isListening = false;
-                this.recordBtn.textContent = 'Start Recording';
-                this.recordBtn.classList.remove('recording');
-                this.recordBtn.disabled = false;
-                this.stopBtn.disabled = true;
-                this.hideStatus();
-            }
-
-            sendTextMessage() {
-                const message = this.textInput.value.trim();
-                if (!message) return;
-
-                this.addMessage(message, 'user');
-                this.textInput.value = '';
-                this.processMessage(message);
-            }
-
-            async processMessage(message) {
-                // Enhanced Hinglish prompt for more natural responses
-                const hinglishPrompt = `You are Tarang, a friendly Indian AI assistant. Respond in natural Hinglish (Hindi-English mix) as Indians actually speak in daily conversation. Mix Hindi and English words naturally. Keep responses conversational, warm, and helpful. Use common Hindi words like "acha", "kya", "hai", "haan", "nahi", "thik hai", "samjha", etc. mixed with English. Make it sound like how Indians chat with friends. User said: "${message}"`;
-
-                this.isProcessing = true;
-                this.startTime = Date.now();
-                this.updateStatus('Processing with Gemini...', 'processing');
-                
-                try {
-                    const response = await this.callGeminiAPI(hinglishPrompt);
-                    this.addMessage(response, 'bot');
-                    await this.speakTextWithElevenLabs(response);
-                    
-                    // Update response time
-                    const totalTime = Date.now() - this.startTime;
-                    this.responseTime.textContent = `${totalTime}ms`;
-                    
-                } catch (error) {
-                    const errorMsg = `Error: ${error.message}`;
-                    this.addMessage(errorMsg, 'bot');
-                    this.speakText(errorMsg);
-                } finally {
-                    this.isProcessing = false;
-                    this.hideStatus();
-                }
-            }
-
-            async callGeminiAPI(message) {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        message: message
-                    })
-                });
-
-                if (!response.ok) {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error || `Request failed: ${response.statusText}`);
-                }
-
-                const data = await response.json();
-                return data.response;
-            }
-
-            async speakTextWithElevenLabs(text) {
-                try {
-                    this.updateStatus('Generating speech with ElevenLabs...', 'speaking');
-                    
-                    const voiceId = this.voiceSelect.value || 'pNInz6obpgDQGcFmaJgB';
-                    const stability = parseFloat(this.stabilitySlider.value);
-                    const clarity = parseFloat(this.claritySlider.value);
-                    
-                    const response = await fetch('/api/tts', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            text: text,
-                            voiceId: voiceId,
-                            stability: stability,
-                            clarity: clarity
-                        })
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.error || 'ElevenLabs TTS request failed');
-                    }
-
-                    const data = await response.json();
-                    
-                    // Create audio from base64 data
-                    const audioBlob = this.base64ToBlob(data.audioData, data.mimeType);
-                    const audioUrl = URL.createObjectURL(audioBlob);
-                    
-                    const audio = new Audio(audioUrl);
-                    
-                    audio.onloadeddata = () => {
-                        this.updateStatus('Playing ElevenLabs audio...', 'speaking');
-                    };
-                    
-                    audio.onended = () => {
-                        this.hideStatus();
-                        URL.revokeObjectURL(audioUrl);
-                    };
-                    
-                    audio.onerror = (error) => {
-                        console.error('Audio playback error:', error);
-                        this.hideStatus();
-                        this.speakText(text);
-                    };
-                    
-                    await audio.play();
-                    
-                } catch (error) {
-                    console.error('ElevenLabs TTS error:', error);
-                    this.hideStatus();
-                    this.speakText(text);
-                }
-            }
-
-            base64ToBlob(base64, mimeType) {
-                const byteCharacters = atob(base64);
-                const byteNumbers = new Array(byteCharacters.length);
-                for (let i = 0; i < byteCharacters.length; i++) {
-                    byteNumbers[i] = byteCharacters.charCodeAt(i);
-                }
-                const byteArray = new Uint8Array(byteNumbers);
-                return new Blob([byteArray], { type: mimeType });
-            }
-
-            // Fallback browser TTS
-            speakText(text) {
-                this.synthesis.cancel();
-                
-                const utterance = new SpeechSynthesisUtterance(text);
-                utterance.rate = 1.0;
-                utterance.lang = 'hi-IN'; // Hindi for better Hinglish pronunciation
-                
-                utterance.onstart = () => {
-                    this.updateStatus('Speaking with browser voice...', 'speaking');
-                };
-                
-                utterance.onend = () => {
-                    this.hideStatus();
-                };
-                
-                this.synthesis.speak(utterance);
-            }
-
-            addMessage(message, type) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${type}-message`;
-                messageDiv.textContent = message;
-                
-                this.chatContainer.appendChild(messageDiv);
-                this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
-            }
-
-            updateStatus(message, type) {
-                this.statusDiv.textContent = message;
-                this.statusDiv.className = `status ${type}`;
-                this.statusDiv.style.display = 'block';
-            }
-
-            hideStatus() {
-                this.statusDiv.style.display = 'none';
-            }
-
-            clearChat() {
-                this.chatContainer.innerHTML = `
-                    <div class="bot-message">
-                        Namaste! I'm Tarang with ElevenLabs integration. I can speak naturally in Hinglish with ultra-fast response times. Click "Start Recording" to speak with me, or type below!
-                    </div>
-                `;
-                this.synthesis.cancel();
-                this.responseTime.textContent = '--';
-            }
-        }
-
-        // Initialize the enhanced chatbot when the page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new ElevenLabsAudioChatbot();
+  <script>
+    class TarangChat {
+      constructor(){
+        this.chat=document.getElementById("chatContainer");
+        this.textInput=document.getElementById("textInput");
+        this.sendBtn=document.getElementById("sendBtn");
+        this.micBtn=document.getElementById("micBtn");
+        this.synthesis=window.speechSynthesis;
+        this.recognition=null;
+        this.isRecording=false;
+        this.typingDiv=null;
+        this.autoResize();
+        this.initSpeech();
+        this.bind();
+      }
+      bind(){
+        this.sendBtn.onclick=()=>this.sendMsg();
+        this.textInput.addEventListener("keypress",e=>{
+          if(e.key==="Enter"&&!e.shiftKey){
+            e.preventDefault();
+            this.sendMsg();
+          }
         });
-    </script>
+        this.micBtn.onclick=()=>this.toggleMic();
+      }
+      autoResize(){
+        this.textInput.addEventListener("input",()=>{
+          this.textInput.style.height="auto";
+          this.textInput.style.height=(this.textInput.scrollHeight)+"px";
+        });
+      }
+      initSpeech(){
+        if("webkitSpeechRecognition"in window||"SpeechRecognition"in window){
+          const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+          this.recognition=new SR();this.recognition.lang="hi-IN";
+          this.recognition.onstart=()=>{this.micBtn.classList.add("active");this.micBtn.textContent="⏹";}
+          this.recognition.onresult=e=>{
+            let t=e.results[0][0].transcript;
+            this.addMsg(t,"user");this.process(t);
+          };
+          this.recognition.onerror=()=>this.stopMic();
+          this.recognition.onend=()=>this.stopMic();
+        }
+      }
+      toggleMic(){
+        if(!this.recognition) return;
+        if(this.isRecording){ this.stopMic(); }
+        else{ this.startMic(); }
+      }
+      startMic(){
+        this.isRecording=true;
+        this.recognition.start();
+      }
+      stopMic(){
+        if(this.recognition){ this.recognition.stop(); }
+        this.isRecording=false;
+        this.micBtn.classList.remove("active");
+        this.micBtn.textContent="🎤";
+      }
+      sendMsg(){
+        let t=this.textInput.value.trim();if(!t)return;
+        this.addMsg(t,"user");this.textInput.value="";
+        this.textInput.style.height="auto";
+        this.process(t);
+      }
+      async process(msg){
+        this.showTyping();
+        try{
+          const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg})});
+          if(!res.ok) throw new Error("Server error");
+          let data=await res.json();
+          this.hideTyping();
+          this.addMsg(data.response,"bot");
+          this.speak(data.response);
+        }catch(err){
+          this.hideTyping();
+          this.addMsg("⚠️ "+err.message,"bot");
+        }
+      }
+      speak(text){const u=new SpeechSynthesisUtterance(text);u.lang="hi-IN";this.synthesis.speak(u);}
+      addMsg(txt,type){
+        const d=document.createElement("div");
+        d.className="message "+type+"-message";
+        d.textContent=txt;
+        this.chat.appendChild(d);
+        this.chat.scrollTop=this.chat.scrollHeight;
+      }
+      showTyping(){
+        this.typingDiv=document.createElement("div");
+        this.typingDiv.className="typing";
+        this.typingDiv.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        this.chat.appendChild(this.typingDiv);
+        this.chat.scrollTop=this.chat.scrollHeight;
+      }
+      hideTyping(){
+        if(this.typingDiv){this.chat.removeChild(this.typingDiv);this.typingDiv=null;}
+      }
+    }
+    document.addEventListener("DOMContentLoaded",()=>new TarangChat());
+  </script>
 </body>
 </html>
