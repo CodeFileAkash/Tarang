@@ -5,19 +5,116 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Tarang - Hinglish AI</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="favicon.png" sizes="512x512">
-
+  
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
+    
     body {
       font-family: 'Inter', sans-serif;
       background: #000;
       color: #fff;
-      display: flex;
       height: 100vh;
       overflow: hidden;
+    }
+
+    /* Login Screen */
+    .login-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 40px;
+      text-align: center;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+      width: 400px;
+    }
+
+    .login-container h1 {
+      color: white;
+      margin-bottom: 10px;
+      font-size: 2.5rem;
+      font-weight: 800;
+    }
+
+    .login-container p {
+      color: rgba(255, 255, 255, 0.8);
+      margin-bottom: 30px;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .login-input {
+      padding: 15px 20px;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      color: white;
+      font-size: 16px;
+    }
+
+    .login-input::placeholder {
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .login-btn {
+      padding: 15px;
+      background: linear-gradient(135deg, #10a37f, #059669);
+      border: none;
+      border-radius: 12px;
+      color: white;
+      font-weight: 600;
+      font-size: 16px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(16, 163, 127, 0.4);
+    }
+
+    .error-message {
+      color: #ef4444;
+      font-size: 14px;
+      margin-top: 10px;
+    }
+
+    .demo-info {
+      margin-top: 20px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      background: rgba(255,255,255,0.1);
+      padding: 10px;
+      border-radius: 8px;
+    }
+
+    /* Main App */
+    .app {
+      width: 100%;
+      height: 100vh;
+      display: none;
+    }
+
+    .app.show {
+      display: flex;
     }
 
     /* Sidebar */
@@ -27,87 +124,165 @@
       border-right: 1px solid #222;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
+      position: relative;
     }
+
     .sidebar-top {
       padding: 16px;
+      flex: 1;
     }
+
     .new-chat-btn {
       width: 100%;
-      padding: 10px;
+      padding: 12px;
       background: #10a37f;
       border: none;
-      border-radius: 6px;
+      border-radius: 8px;
       font-weight: 600;
       cursor: pointer;
       color: #fff;
       margin-bottom: 20px;
+      transition: background 0.3s ease;
     }
-    .chat-history {
+
+    .new-chat-btn:hover {
+      background: #059669;
+    }
+
+    .perf-stats {
       display: flex;
-      flex-direction: column;
       gap: 10px;
+      padding: 12px;
+      background: #1a1a1a;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      font-size: 12px;
     }
-    .chat-history button {
+
+    .perf-item {
+      flex: 1;
+      text-align: center;
+      color: #aaa;
+    }
+
+    .perf-value {
+      display: block;
+      color: #10a37f;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .chat-history {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
+    .chat-history-item {
       background: #1a1a1a;
       border: none;
-      border-radius: 6px;
-      padding: 10px;
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
       text-align: left;
       color: #ccc;
       cursor: pointer;
-      transition: background .2s;
+      transition: all 0.2s ease;
+      font-size: 14px;
+      width: 100%;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }
-    .chat-history button:hover {
+
+    .chat-title {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .delete-chat-btn {
+      background: transparent;
+      border: none;
+      color: #666;
+      font-size: 14px;
+      cursor: pointer;
+      padding: 4px 8px;
+      border-radius: 4px;
+      transition: all 0.2s ease;
+      opacity: 0;
+      margin-left: 8px;
+    }
+
+    .chat-history-item:hover .delete-chat-btn {
+      opacity: 1;
+    }
+
+    .delete-chat-btn:hover {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .chat-history-item:hover {
       background: #2a2a2a;
       color: #fff;
     }
+
+    .chat-history-item.active {
+      background: #10a37f;
+      color: #fff;
+    }
+
     .sidebar-bottom {
       border-top: 1px solid #222;
       padding: 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
     }
-    .sidebar-bottom button {
+
+    .sidebar-btn {
       background: transparent;
       border: none;
       color: #aaa;
       text-align: left;
       cursor: pointer;
-      padding: 8px;
-      transition: color .2s;
-    }
-    .sidebar-bottom button:hover {
-      color: #fff;
+      padding: 12px;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      margin-bottom: 5px;
     }
 
-    /* Main */
+    .sidebar-btn:hover {
+      color: #fff;
+      background: #2a2a2a;
+    }
+
+    /* Main Content */
     .main {
       flex: 1;
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
- .header {
-  padding: 6px 12px;   /* smaller padding */
-  border-bottom: 1px solid #222;
-  background: #111;    /* keep dark */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  height: 50px;        /* fixed smaller height */
-}
 
-.header img {
-  height: 150px;        /* smaller logo */
-  max-width: 600px;
-  object-fit: contain;
-  filter: drop-shadow();
-}
+    .header {
+      padding: 16px;
+      border-bottom: 1px solid #222;
+      background: #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 60px;
+    }
+
+    .header-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #fff;
+    }
 
     .chat-container {
       flex: 1;
@@ -117,43 +292,87 @@
       flex-direction: column;
       gap: 12px;
     }
+
     .message {
       padding: 12px 16px;
-      border-radius: 8px;
+      border-radius: 12px;
       max-width: 70%;
-      line-height: 1.4;
+      line-height: 1.5;
       font-size: 15px;
       white-space: pre-wrap;
+      animation: messageSlide 0.3s ease-out;
     }
+
+    @keyframes messageSlide {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
     .bot-message {
       background: #2a2a2a;
       align-self: flex-start;
+      border: 1px solid #333;
+      color: #fff;
     }
+
     .user-message {
-      background: #10a37f;
+      background: linear-gradient(135deg, #10a37f, #059669);
       color: #fff;
       align-self: flex-end;
     }
 
-    /* Input capsule */
+    .message-time {
+      font-size: 11px;
+      opacity: 0.6;
+      margin-top: 4px;
+    }
+
+    .typing {
+      display: flex;
+      gap: 4px;
+      padding: 12px 16px;
+      background: #2a2a2a;
+      border: 1px solid #333;
+      border-radius: 12px;
+      max-width: 70%;
+      align-self: flex-start;
+    }
+
+    .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #aaa;
+      animation: blink 1.4s infinite;
+    }
+
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes blink {
+      0%, 80%, 100% { opacity: 0.3; }
+      40% { opacity: 1; }
+    }
+
+    /* Input Section */
     .input-section {
       border-top: 1px solid #222;
       background: #111;
-      padding: 16px;
-      display: flex;
-      justify-content: center;
+      padding: 20px;
     }
+
     .input-wrapper {
-      width: 50%;
       display: flex;
-      align-items: center;
-      gap: 10px;
+      align-items: flex-end;
+      gap: 12px;
       background: #1a1a1a;
       border: 1px solid #333;
-      border-radius: 50px;
-      padding: 10px 16px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      border-radius: 25px;
+      padding: 12px 20px;
+      max-width: 600px;
+      margin: 0 auto;
     }
+
     textarea {
       flex: 1;
       resize: none;
@@ -164,179 +383,952 @@
       line-height: 1.4;
       max-height: 120px;
       overflow-y: auto;
+      font-family: inherit;
     }
+
     textarea:focus { outline: none; }
+
     .btn-icon {
       background: transparent;
       border: none;
       color: #aaa;
       font-size: 18px;
       cursor: pointer;
-      padding: 6px;
-      transition: color .2s;
-    }
-    .btn-icon:hover { color: #fff; }
-    .btn-icon.active { color: #10a37f; }
-
-    .typing {
-      display: flex;
-      gap: 4px;
-      padding: 12px 16px;
-      background: #2a2a2a;
-      border-radius: 8px;
-      max-width: 70%;
-    }
-    .dot {
-      width: 6px;
-      height: 6px;
+      padding: 8px;
       border-radius: 50%;
-      background: #aaa;
-      animation: blink 1.4s infinite;
+      transition: all 0.2s ease;
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes blink {
-      0%, 80%, 100% { opacity: 0.2; }
-      40% { opacity: 1; }
+
+    .btn-icon:hover { 
+      color: #fff; 
+      background: #333;
+    }
+
+    .btn-icon.recording {
+      color: #ef4444;
+      background: rgba(239, 68, 68, 0.2);
+      animation: pulse 1s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    /* Settings Modal */
+    .modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 200;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .modal-content {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 20px;
+      font-weight: 600;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: #aaa;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .settings-group {
+      margin-bottom: 20px;
+    }
+
+    .settings-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #fff;
+    }
+
+    .settings-select {
+      width: 100%;
+      padding: 12px;
+      background: #2a2a2a;
+      border: 1px solid #444;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14px;
+    }
+
+    .hidden { display: none !important; }
+
+    /* Confirmation Modal */
+    .confirm-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 300;
+    }
+
+    .confirm-modal.show {
+      display: flex;
+    }
+
+    .confirm-content {
+      background: #1a1a1a;
+      border: 1px solid #333;
+      border-radius: 16px;
+      padding: 30px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+
+    .confirm-title {
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 15px;
+      color: #fff;
+    }
+
+    .confirm-message {
+      color: #ccc;
+      margin-bottom: 25px;
+      line-height: 1.5;
+    }
+
+    .confirm-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+    }
+
+    .confirm-btn {
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+    }
+
+    .confirm-btn.primary {
+      background: #ef4444;
+      color: white;
+    }
+
+    .confirm-btn.primary:hover {
+      background: #dc2626;
+      transform: translateY(-1px);
+    }
+
+    .confirm-btn.secondary {
+      background: #374151;
+      color: #d1d5db;
+    }
+
+    .confirm-btn.secondary:hover {
+      background: #4b5563;
+      transform: translateY(-1px);
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: -250px;
+        top: 0;
+        height: 100%;
+        z-index: 50;
+        transition: left 0.3s ease;
+      }
+
+      .sidebar.open {
+        left: 0;
+      }
+
+      .login-container {
+        width: 90%;
+        margin: 20px;
+      }
     }
   </style>
 </head>
 <body>
-  <!-- Sidebar -->
-  <div class="sidebar">
-    <div class="sidebar-top">
-      <button class="new-chat-btn">+ New Chat</button>
-      <div class="chat-history">
-        <button>Recent Chat 1</button>
-        <button>Recent Chat 2</button>
+  <!-- Login Screen -->
+  <div id="loginScreen" class="login-screen">
+    <div class="login-container">
+      <h1>Tarang</h1>
+      <p>Advanced Hinglish AI Assistant</p>
+      <div class="login-form">
+        <input type="text" id="username" class="login-input" placeholder="Username" value="admin">
+        <input type="password" id="password" class="login-input" placeholder="Password">
+        <button id="loginBtn" class="login-btn">Login</button>
+        <div id="loginError" class="error-message hidden"></div>
       </div>
-    </div>
-    <div class="sidebar-bottom">
-      <button>⚙ Settings</button>
-      <button>❓ Help</button>
-      <button>🔒 Log Out</button>
+      <div class="demo-info">
+        Demo Credentials:<br>
+        Username: admin<br>
+        Password: tarang2025
+      </div>
     </div>
   </div>
 
-  <!-- Main content -->
-  <div class="main">
-    <div class="header">
-      <img src="/logo.png" alt="Tarang Logo">
+  <!-- Main App -->
+  <div id="app" class="app">
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-top">
+        <button id="newChatBtn" class="new-chat-btn">+ New Chat</button>
+        
+        <div class="perf-stats">
+          <div class="perf-item">
+            <span class="perf-value" id="responseTime">--</span>
+            <span>Response</span>
+          </div>
+          <div class="perf-item">
+            <span class="perf-value" id="messageCount">0</span>
+            <span>Messages</span>
+          </div>
+        </div>
+        
+        <div id="chatHistory" class="chat-history"></div>
+      </div>
+      
+      <div class="sidebar-bottom">
+        <button id="settingsBtn" class="sidebar-btn">
+          <span>⚙</span>
+          <span>Settings</span>
+        </button>
+        <button id="helpBtn" class="sidebar-btn">
+          <span>❓</span>
+          <span>Help</span>
+        </button>
+        <button id="logoutBtn" class="sidebar-btn">
+          <span>🔒</span>
+          <span>Logout</span>
+        </button>
+      </div>
     </div>
 
-    <div id="chatContainer" class="chat-container">
-      <div class="bot-message message">Namaste! I'm Tarang. Type or tap 🎤 to talk 👇</div>
-    </div>
+    <!-- Main Content -->
+    <div class="main">
+      <div class="header">
+        <span class="header-title">Tarang - Hinglish AI</span>
+      </div>
 
-    <!-- Capsule Input -->
-    <div class="input-section">
-      <div class="input-wrapper">
-        <button id="micBtn" class="btn-icon" aria-label="Start recording">🎤</button>
-        <textarea id="textInput" rows="1" placeholder="Send a message..."></textarea>
-        <button id="sendBtn" class="btn-icon" aria-label="Send">➤</button>
+      <div id="chatContainer" class="chat-container">
+        <div class="bot-message message">
+          <div>Namaste! I'm Tarang. Type or tap 🎤 to talk 👇</div>
+          <div class="message-time" id="initialTime"></div>
+        </div>
+      </div>
+
+      <div class="input-section">
+        <div class="input-wrapper">
+          <button id="micBtn" class="btn-icon" title="Voice input">🎤</button>
+          <textarea id="textInput" rows="1" placeholder="Send a message..."></textarea>
+          <button id="sendBtn" class="btn-icon" title="Send message">➤</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settingsModal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Settings</h3>
+        <button class="close-btn" id="closeSettings">×</button>
+      </div>
+      
+      <div class="settings-group">
+        <label class="settings-label">ElevenLabs Voice</label>
+        <select id="voiceSelect" class="settings-select">
+          <option value="pNInz6obpgDQGcFmaJgB">Adam (Great for Indian English)</option>
+          <option value="EXAVITQu4vr4xnSDxMaL">Bella (Natural Female)</option>
+          <option value="VR6AewLTigWG4xSOukaG">Arnold (Deep Male)</option>
+          <option value="29vD33N1CtxCmqQRPOHJ">Nixon (Authoritative)</option>
+          <option value="IKne3meq5aSn9XLyUdCD">Charlie (Conversational)</option>
+          <option value="onwK4e9ZLuTAKqWW03F9">Daniel (Clear & Articulate)</option>
+        </select>
+      </div>
+
+      <div class="settings-group">
+        <label class="settings-label">Auto-play Responses</label>
+        <select id="autoPlaySelect" class="settings-select">
+          <option value="true">Enabled</option>
+          <option value="false">Disabled</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation Modal -->
+  <div id="confirmModal" class="confirm-modal">
+    <div class="confirm-content">
+      <h3 class="confirm-title" id="confirmTitle">Confirm Action</h3>
+      <p class="confirm-message" id="confirmMessage">Are you sure you want to proceed?</p>
+      <div class="confirm-buttons">
+        <button class="confirm-btn secondary" id="confirmCancel">Cancel</button>
+        <button class="confirm-btn primary" id="confirmYes">Yes</button>
       </div>
     </div>
   </div>
 
   <script>
-    class TarangChat {
-      constructor(){
-        this.chat=document.getElementById("chatContainer");
-        this.textInput=document.getElementById("textInput");
-        this.sendBtn=document.getElementById("sendBtn");
-        this.micBtn=document.getElementById("micBtn");
-        this.synthesis=window.speechSynthesis;
-        this.recognition=null;
-        this.isRecording=false;
-        this.typingDiv=null;
-        this.autoResize();
-        this.initSpeech();
-        this.bind();
+    // Global variables for session management
+    let isAuthenticated = false;
+    let tarangChat = null;
+
+    // Initialize app when page loads
+    document.addEventListener('DOMContentLoaded', function() {
+      console.log('DOM loaded, initializing app...');
+      
+      // Check if already authenticated
+      if (checkAuth()) {
+        showApp();
+      } else {
+        setupLoginEvents();
       }
-      bind(){
-        this.sendBtn.onclick=()=>this.sendMsg();
-        this.textInput.addEventListener("keypress",e=>{
-          if(e.key==="Enter"&&!e.shiftKey){
-            e.preventDefault();
-            this.sendMsg();
-          }
-        });
-        this.micBtn.onclick=()=>this.toggleMic();
-      }
-      autoResize(){
-        this.textInput.addEventListener("input",()=>{
-          this.textInput.style.height="auto";
-          this.textInput.style.height=(this.textInput.scrollHeight)+"px";
-        });
-      }
-      initSpeech(){
-        if("webkitSpeechRecognition"in window||"SpeechRecognition"in window){
-          const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-          this.recognition=new SR();this.recognition.lang="hi-IN";
-          this.recognition.onstart=()=>{this.micBtn.classList.add("active");this.micBtn.textContent="⏹";}
-          this.recognition.onresult=e=>{
-            let t=e.results[0][0].transcript;
-            this.addMsg(t,"user");this.process(t);
-          };
-          this.recognition.onerror=()=>this.stopMic();
-          this.recognition.onend=()=>this.stopMic();
+    });
+
+    // Simple authentication check
+    function checkAuth() {
+      return sessionStorage.getItem('tarang_authenticated') === 'true';
+    }
+
+    // Setup login event listeners
+    function setupLoginEvents() {
+      const loginBtn = document.getElementById('loginBtn');
+      const passwordInput = document.getElementById('password');
+      const usernameInput = document.getElementById('username');
+      
+      // Login button click
+      loginBtn.addEventListener('click', handleLogin);
+      
+      // Enter key on both input fields
+      passwordInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          handleLogin();
         }
-      }
-      toggleMic(){
-        if(!this.recognition) return;
-        if(this.isRecording){ this.stopMic(); }
-        else{ this.startMic(); }
-      }
-      startMic(){
-        this.isRecording=true;
-        this.recognition.start();
-      }
-      stopMic(){
-        if(this.recognition){ this.recognition.stop(); }
-        this.isRecording=false;
-        this.micBtn.classList.remove("active");
-        this.micBtn.textContent="🎤";
-      }
-      sendMsg(){
-        let t=this.textInput.value.trim();if(!t)return;
-        this.addMsg(t,"user");this.textInput.value="";
-        this.textInput.style.height="auto";
-        this.process(t);
-      }
-      async process(msg){
-        this.showTyping();
-        try{
-          const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({message:msg})});
-          if(!res.ok) throw new Error("Server error");
-          let data=await res.json();
-          this.hideTyping();
-          this.addMsg(data.response,"bot");
-          this.speak(data.response);
-        }catch(err){
-          this.hideTyping();
-          this.addMsg("⚠️ "+err.message,"bot");
+      });
+
+      usernameInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          e.preventDefault();
+          passwordInput.focus();
         }
-      }
-      speak(text){const u=new SpeechSynthesisUtterance(text);u.lang="hi-IN";this.synthesis.speak(u);}
-      addMsg(txt,type){
-        const d=document.createElement("div");
-        d.className="message "+type+"-message";
-        d.textContent=txt;
-        this.chat.appendChild(d);
-        this.chat.scrollTop=this.chat.scrollHeight;
-      }
-      showTyping(){
-        this.typingDiv=document.createElement("div");
-        this.typingDiv.className="typing";
-        this.typingDiv.innerHTML='<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
-        this.chat.appendChild(this.typingDiv);
-        this.chat.scrollTop=this.chat.scrollHeight;
-      }
-      hideTyping(){
-        if(this.typingDiv){this.chat.removeChild(this.typingDiv);this.typingDiv=null;}
+      });
+      
+      console.log('Login events setup complete');
+    }
+
+    // Login handler
+    function handleLogin() {
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value.trim();
+      const errorDiv = document.getElementById('loginError');
+
+      console.log('Login attempt:', username, password);
+
+      if (username === 'admin' && password === 'tarang2025') {
+        sessionStorage.setItem('tarang_authenticated', 'true');
+        sessionStorage.setItem('tarang_username', username);
+        isAuthenticated = true;
+        showApp();
+      } else {
+        errorDiv.textContent = 'Invalid credentials. Use: admin / tarang2025';
+        errorDiv.classList.remove('hidden');
+        setTimeout(() => {
+          errorDiv.classList.add('hidden');
+        }, 3000);
       }
     }
-    document.addEventListener("DOMContentLoaded",()=>new TarangChat());
+
+    // Show main app
+    function showApp() {
+      document.getElementById('loginScreen').style.display = 'none';
+      document.getElementById('app').classList.add('show');
+      initializeChat();
+    }
+
+    // Initialize chat after login
+    function initializeChat() {
+      console.log('Initializing chat...');
+      
+      // Set initial time
+      const initialTime = document.getElementById('initialTime');
+      if (initialTime) {
+        initialTime.textContent = new Date().toLocaleTimeString();
+      }
+      
+      // Initialize chat class
+      tarangChat = new TarangChat();
+      
+      // Setup event listeners for sidebar buttons
+      setupSidebarEvents();
+    }
+
+    // Setup sidebar event listeners
+    function setupSidebarEvents() {
+      document.getElementById('newChatBtn').addEventListener('click', () => {
+        tarangChat.createNewChat();
+      });
+      
+      document.getElementById('settingsBtn').addEventListener('click', () => {
+        document.getElementById('settingsModal').classList.add('show');
+      });
+      
+      document.getElementById('closeSettings').addEventListener('click', () => {
+        document.getElementById('settingsModal').classList.remove('show');
+      });
+      
+      document.getElementById('helpBtn').addEventListener('click', () => {
+        tarangChat.showHelp();
+      });
+      
+      document.getElementById('logoutBtn').addEventListener('click', handleLogout);
+      
+      // Close modal when clicking outside
+      document.getElementById('settingsModal').addEventListener('click', (e) => {
+        if (e.target.id === 'settingsModal') {
+          document.getElementById('settingsModal').classList.remove('show');
+        }
+      });
+    }
+
+    // Logout handler
+    function handleLogout() {
+      showConfirmation(
+        'Logout Confirmation',
+        'Are you sure you want to logout?',
+        () => {
+          sessionStorage.clear();
+          isAuthenticated = false;
+          location.reload();
+        }
+      );
+    }
+
+    // Custom confirmation dialog function
+    function showConfirmation(title, message, onConfirm, onCancel = null) {
+      const modal = document.getElementById('confirmModal');
+      const titleEl = document.getElementById('confirmTitle');
+      const messageEl = document.getElementById('confirmMessage');
+      const yesBtn = document.getElementById('confirmYes');
+      const cancelBtn = document.getElementById('confirmCancel');
+
+      titleEl.textContent = title;
+      messageEl.textContent = message;
+      modal.classList.add('show');
+
+      // Handle confirm
+      const confirmHandler = () => {
+        modal.classList.remove('show');
+        if (onConfirm) onConfirm();
+        cleanup();
+      };
+
+      // Handle cancel
+      const cancelHandler = () => {
+        modal.classList.remove('show');
+        if (onCancel) onCancel();
+        cleanup();
+      };
+
+      // Cleanup event listeners
+      const cleanup = () => {
+        yesBtn.removeEventListener('click', confirmHandler);
+        cancelBtn.removeEventListener('click', cancelHandler);
+        modal.removeEventListener('click', outsideClickHandler);
+        document.removeEventListener('keydown', escapeHandler);
+      };
+
+      // Outside click handler
+      const outsideClickHandler = (e) => {
+        if (e.target === modal) {
+          cancelHandler();
+        }
+      };
+
+      // Escape key handler
+      const escapeHandler = (e) => {
+        if (e.key === 'Escape') {
+          cancelHandler();
+        }
+      };
+
+      // Bind events
+      yesBtn.addEventListener('click', confirmHandler);
+      cancelBtn.addEventListener('click', cancelHandler);
+      modal.addEventListener('click', outsideClickHandler);
+      document.addEventListener('keydown', escapeHandler);
+    }
+
+    class TarangChat {
+      constructor() {
+        // Use in-memory storage instead of localStorage for demo
+        this.chats = {};
+        this.currentChatId = null;
+        this.messageCount = 0;
+        this.recognition = null;
+        this.synthesis = window.speechSynthesis;
+        this.isRecording = false;
+        this.typingDiv = null;
+
+        this.initElements();
+        this.initSpeech();
+        this.bindChatEvents();
+        this.createNewChat();
+      }
+
+      initElements() {
+        this.chatContainer = document.getElementById('chatContainer');
+        this.textInput = document.getElementById('textInput');
+        this.sendBtn = document.getElementById('sendBtn');
+        this.micBtn = document.getElementById('micBtn');
+        this.responseTime = document.getElementById('responseTime');
+        this.messageCountEl = document.getElementById('messageCount');
+        this.chatHistory = document.getElementById('chatHistory');
+        this.settingsModal = document.getElementById('settingsModal');
+        this.voiceSelect = document.getElementById('voiceSelect');
+        this.autoPlaySelect = document.getElementById('autoPlaySelect');
+      }
+
+      initSpeech() {
+        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          this.recognition = new SpeechRecognition();
+          this.recognition.lang = 'hi-IN';
+          this.recognition.continuous = false;
+          this.recognition.interimResults = false;
+
+          this.recognition.onstart = () => {
+            this.isRecording = true;
+            this.micBtn.classList.add('recording');
+          };
+
+          this.recognition.onresult = (event) => {
+            const transcript = event.results[0][0].transcript;
+            this.addMessage(transcript, 'user');
+            this.processMessage(transcript);
+          };
+
+          this.recognition.onerror = () => this.stopRecording();
+          this.recognition.onend = () => this.stopRecording();
+        }
+      }
+
+      bindChatEvents() {
+        this.sendBtn.addEventListener('click', () => this.sendTextMessage());
+        
+        this.textInput.addEventListener('keypress', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            this.sendTextMessage();
+          }
+        });
+        
+        this.micBtn.addEventListener('click', () => this.toggleRecording());
+
+        // Auto-resize textarea
+        this.textInput.addEventListener('input', () => {
+          this.textInput.style.height = 'auto';
+          this.textInput.style.height = this.textInput.scrollHeight + 'px';
+        });
+      }
+
+      toggleRecording() {
+        if (!this.recognition) {
+          alert('Speech recognition not supported in this browser');
+          return;
+        }
+        
+        if (this.isRecording) {
+          this.stopRecording();
+        } else {
+          this.startRecording();
+        }
+      }
+
+      startRecording() {
+        this.synthesis.cancel();
+        this.recognition.start();
+      }
+
+      stopRecording() {
+        if (this.recognition) this.recognition.stop();
+        this.isRecording = false;
+        this.micBtn.classList.remove('recording');
+      }
+
+      sendTextMessage() {
+        const message = this.textInput.value.trim();
+        if (!message) return;
+
+        this.addMessage(message, 'user');
+        this.textInput.value = '';
+        this.textInput.style.height = 'auto';
+        this.processMessage(message);
+      }
+
+      async processMessage(message) {
+        const startTime = Date.now();
+        this.showTyping();
+        
+        try {
+          // Simulate AI response with mock responses
+          const response = await this.getMockResponse(message);
+          this.hideTyping();
+          this.addMessage(response, 'bot');
+          
+          this.saveMessage(message, 'user');
+          this.saveMessage(response, 'bot');
+          
+          const totalTime = Date.now() - startTime;
+          this.responseTime.textContent = `${totalTime}ms`;
+          this.updateMessageCount();
+          
+          const autoPlay = this.autoPlaySelect.value;
+          if (autoPlay === 'true') {
+            this.speakResponse(response);
+          }
+          
+        } catch (error) {
+          this.hideTyping();
+          this.addMessage(`Error: ${error.message}`, 'bot');
+        }
+      }
+
+      // Mock AI responses for demo
+      async getMockResponse(message) {
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
+        
+        const lowerMsg = message.toLowerCase();
+        
+        // Context-aware responses
+        if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('namaste')) {
+          return "Namaste! Main Tarang hun, aapka AI assistant. Kya help chahiye aapko?";
+        }
+        
+        if (lowerMsg.includes('weather') || lowerMsg.includes('mausam')) {
+          return "Aaj ka weather thoda cloudy hai yaar! But main exact forecast nahi de sakta. Weather app check karo for accurate info.";
+        }
+        
+        if (lowerMsg.includes('time') || lowerMsg.includes('samay')) {
+          return `Abhi time hai ${new Date().toLocaleTimeString()}. Kuch aur help chahiye?`;
+        }
+        
+        if (lowerMsg.includes('kya hal') || lowerMsg.includes('kaise ho')) {
+          return "Main bilkul thik hun bhai! Ready to help. Aap batao, kya karna hai?";
+        }
+        
+        if (lowerMsg.includes('thanks') || lowerMsg.includes('dhanyawad') || lowerMsg.includes('shukriya')) {
+          return "Arre yaar, mention not! Happy to help. Kuch aur chahiye to bolo.";
+        }
+
+        if (lowerMsg.includes('clear') || lowerMsg.includes('reset')) {
+          return "Chat clear kar dun? New chat button use karo ya 'new chat' type karo.";
+        }
+
+        if (lowerMsg.includes('new chat')) {
+          this.createNewChat();
+          return "Nayi chat start kar di! Fresh conversation begins now.";
+        }
+        
+        const responses = [
+          "Haan bhai, samjha! That's a good question. Let me help you with that.",
+          "Acha, interesting point! Main samjhaunga step by step.",
+          "Bilkul! Yeh bahut simple hai actually. Let me explain.",
+          "Good question yaar! Iska answer thoda complex hai but main try karunga to make it clear.",
+          "Haan haan, yeh common doubt hai. No worries, I'll help you understand.",
+          "Accha question! Main detail mein batauga. Basically yeh kaise kaam karta hai...",
+          "Thik hai bhai, let me break this down for you step by step.",
+          "Good point! Yeh interesting topic hai. Main explain karta hun properly."
+        ];
+        
+        return responses[Math.floor(Math.random() * responses.length)];
+      }
+
+      async speakResponse(text) {
+        try {
+          // For demo, use browser's built-in speech synthesis
+          this.fallbackSpeak(text);
+        } catch (error) {
+          console.error('Speech error:', error);
+        }
+      }
+
+      fallbackSpeak(text) {
+        this.synthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'hi-IN';
+        utterance.rate = 0.9;
+        utterance.pitch = 1.0;
+        this.synthesis.speak(utterance);
+      }
+
+      addMessage(text, type) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${type}-message`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.textContent = text;
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        timeDiv.textContent = new Date().toLocaleTimeString();
+        
+        messageDiv.appendChild(contentDiv);
+        messageDiv.appendChild(timeDiv);
+        
+        this.chatContainer.appendChild(messageDiv);
+        this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+      }
+
+      showTyping() {
+        this.typingDiv = document.createElement('div');
+        this.typingDiv.className = 'typing';
+        this.typingDiv.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+        this.chatContainer.appendChild(this.typingDiv);
+        this.chatContainer.scrollTop = this.chatContainer.scrollHeight;
+      }
+
+      hideTyping() {
+        if (this.typingDiv) {
+          this.chatContainer.removeChild(this.typingDiv);
+          this.typingDiv = null;
+        }
+      }
+
+      updateMessageCount() {
+        this.messageCount++;
+        this.messageCountEl.textContent = this.messageCount;
+      }
+
+      createNewChat() {
+        const chatId = 'chat_' + Date.now();
+        const chatTitle = `New Chat`;
+        
+        this.chats[chatId] = {
+          id: chatId,
+          title: chatTitle,
+          messages: [],
+          createdAt: Date.now()
+        };
+        
+        this.currentChatId = chatId;
+        this.clearChat();
+        this.loadChatHistory();
+      }
+
+      clearChat() {
+        this.chatContainer.innerHTML = `
+          <div class="bot-message message">
+            <div>Namaste! I'm Tarang. Type or tap 🎤 to talk 👇</div>
+            <div class="message-time">${new Date().toLocaleTimeString()}</div>
+          </div>
+        `;
+        this.messageCount = 0;
+        this.messageCountEl.textContent = '0';
+        this.responseTime.textContent = '--';
+      }
+
+      saveMessage(content, type) {
+        if (!this.currentChatId) return;
+        
+        this.chats[this.currentChatId].messages.push({
+          content,
+          type,
+          timestamp: Date.now()
+        });
+        
+        if (type === 'user' && this.chats[this.currentChatId].title === 'New Chat') {
+          const shortTitle = content.length > 25 ? content.substring(0, 25) + '...' : content;
+          this.chats[this.currentChatId].title = shortTitle;
+          this.loadChatHistory();
+        }
+      }
+
+      loadChatHistory() {
+        this.chatHistory.innerHTML = '';
+        
+        const sortedChats = Object.values(this.chats)
+          .sort((a, b) => b.createdAt - a.createdAt);
+        
+        sortedChats.forEach(chat => {
+          const button = document.createElement('button');
+          button.className = 'chat-history-item';
+          
+          const titleSpan = document.createElement('span');
+          titleSpan.className = 'chat-title';
+          titleSpan.textContent = chat.title;
+          
+          const deleteBtn = document.createElement('button');
+          deleteBtn.className = 'delete-chat-btn';
+          deleteBtn.innerHTML = '🗑️';
+          deleteBtn.title = 'Delete chat';
+          
+          // Prevent delete button from triggering chat load
+          deleteBtn.onclick = (e) => {
+            e.stopPropagation();
+            this.deleteChat(chat.id, chat.title);
+          };
+          
+          button.appendChild(titleSpan);
+          button.appendChild(deleteBtn);
+          
+          if (chat.id === this.currentChatId) {
+            button.classList.add('active');
+          }
+          
+          button.onclick = () => this.loadChat(chat.id);
+          this.chatHistory.appendChild(button);
+        });
+      }
+
+      deleteChat(chatId, chatTitle) {
+        showConfirmation(
+          'Delete Chat',
+          `Are you sure you want to delete "${chatTitle}"? This action cannot be undone.`,
+          () => {
+            // Delete the chat
+            delete this.chats[chatId];
+            
+            // Show success message immediately
+            this.addMessage("Chat deleted successfully!", 'bot');
+            
+            // Check if we're deleting the current chat or if it's the last chat
+            const remainingChats = Object.keys(this.chats);
+            
+            if (this.currentChatId === chatId || remainingChats.length === 0) {
+              // If deleting current chat or no chats left, create a new one
+              setTimeout(() => {
+                this.createNewChat();
+              }, 1000);
+            } else {
+              // Switch to another existing chat
+              setTimeout(() => {
+                this.loadChat(remainingChats[0]);
+              }, 1000);
+            }
+            
+            this.loadChatHistory();
+          }
+        );
+      }
+
+      loadChat(chatId) {
+        this.currentChatId = chatId;
+        this.clearChat();
+        
+        const chat = this.chats[chatId];
+        if (chat && chat.messages) {
+          chat.messages.forEach(msg => {
+            this.addMessage(msg.content, msg.type);
+          });
+          this.messageCount = chat.messages.length;
+          this.messageCountEl.textContent = this.messageCount;
+        }
+        
+        this.loadChatHistory();
+      }
+
+      showHelp() {
+        const helpText = `🔹 Tarang Help Guide 🔹
+
+🎤 Voice Commands:
+• Click microphone for voice input
+• Speaks Hinglish naturally  
+• Auto-detects Hindi/English mix
+
+💬 Chat Features:
+• Type in Hindi, English, or Hinglish
+• Press Enter to send messages
+• Multiple chat sessions
+• Auto-save conversations
+
+⚙️ Settings:
+• Choose different AI voices
+• Toggle auto-play responses
+• Customize experience
+
+💡 Usage Tips:
+• Speak naturally in Hinglish
+• Mix Hindi and English freely
+• Try "Namaste", "kya hal hai", etc.
+• Ask questions like "weather kya hai"
+
+🔐 Demo Credentials: 
+Username: admin | Password: tarang2025
+
+Try saying: "Hello", "Time kya hai", "Help me", etc.`;
+
+        this.addMessage(helpText, 'bot');
+      }
+    }
+
+    // Additional utility functions
+    function toggleSidebar() {
+      const sidebar = document.getElementById('sidebar');
+      sidebar.classList.toggle('open');
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      if (window.innerWidth > 768) {
+        document.getElementById('sidebar').classList.remove('open');
+      }
+    });
+
+    // Prevent default form submission behavior
+    document.addEventListener('keydown', (e) => {
+      if (e.target.tagName.toLowerCase() === 'input' && e.key === 'Enter') {
+        // Allow Enter key handling for login inputs specifically
+        if (e.target.id === 'password' || e.target.id === 'username') {
+          return; // Let the specific handlers deal with this
+        }
+        e.preventDefault();
+      }
+    });
   </script>
 </body>
 </html>
