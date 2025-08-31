@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // API Keys - Replace these with your actual keys
 const API_KEYS = {
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
     ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY
 };
 
