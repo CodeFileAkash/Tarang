@@ -9,7 +9,7 @@ const PORT = process.env.PORT || 3000;
 
 // API Keys - Replace these with your actual keys
 const API_KEYS = {
-    GEMINI_API_KEY: process.env.GEMINI_API_KEY,
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
     ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY
 };
 
@@ -19,54 +19,35 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static('public'));
 
-// Gemini API endpoint - now uses hardcoded API key
+// Open AI API endpoint - now uses hardcoded API key
 app.post('/api/chat', async (req, res) => {
     try {
-        const { message } = req.body;
+        const userMessage = req.body.message;
 
-        if (!message) {
-            return res.status(400).json({ error: 'Message is required' });
-        }
-
-        if (API_KEYS.GEMINI_API_KEY === 'PUT_YOUR_GEMINI_API_KEY_HERE') {
-            return res.status(500).json({ error: 'Gemini API key not configured on server' });
-        }
-
-        const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${API_KEYS.GEMINI_API_KEY}`;
-        
-        const response = await fetch(geminiUrl, {
-            method: 'POST',
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
             headers: {
-                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${API_KEYS.OPENAI_API_KEY}`,
+                "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: message
-                    }]
-                }]
+                model: "gpt-3.5-turbo",
+                messages: [
+                    { role: "system", content: "You are a helpful chatbot." },
+                    { role: "user", content: userMessage }
+                ]
             })
         });
 
-        if (!response.ok) {
-            const errorText = await response.text();
-            throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
-        }
-
         const data = await response.json();
-        
-        if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {
-            throw new Error('Invalid response from Gemini API');
-        }
-
-        const botResponse = data.candidates[0].content.parts[0].text;
-        res.json({ response: botResponse });
+        res.json({ response: data.choices[0].message.content });
 
     } catch (error) {
-        console.error('Chat API error:', error);
-        res.status(500).json({ error: error.message });
+        console.error("OpenAI Chat Error:", error);
+        res.status(500).json({ error: "Failed to fetch OpenAI response" });
     }
 });
+
 
 // ElevenLabs TTS API endpoint - now uses hardcoded API key
 app.post('/api/tts', async (req, res) => {
